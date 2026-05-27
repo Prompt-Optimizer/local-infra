@@ -21,6 +21,28 @@ services:
       timeout: 5s
       retries: 5
 
+  shared-rabbitmq:
+    image: rabbitmq:4-management
+    container_name: shared-rabbitmq
+    hostname: shared-rabbitmq
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=password
+      - RABBITMQ_DEFAULT_VHOST=/
+    volumes:
+      - shared_rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      optimization_network:
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   opt-mongo:
     image: mongo:8.0
     container_name: optimization-mongodb
@@ -49,4 +71,5 @@ networks:
 
 volumes:
   rabbitmq_data:
+  shared_rabbitmq_data:
   mongodb_data:
